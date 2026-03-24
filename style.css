@@ -1,6 +1,15 @@
 body {
     font-family: 'Segoe UI', sans-serif;
     text-align: center;
+    background: #f5f7fa;
+}
+
+h2 {
+    margin-top: 20px;
+}
+
+input[type="file"] {
+    margin: 10px;
 }
 
 table {
@@ -8,10 +17,20 @@ table {
     margin: 20px auto;
 }
 
-td {
-    border: 1px solid black;
+td, th {
+    border: 1px solid #999;
     width: 80px;
     height: 40px;
+    text-align: center;
+}
+
+th {
+    background-color: #eaeaea;
+    font-weight: bold;
+}
+
+td:hover {
+    background-color: #d0ebff;
 }
 
 input {
@@ -20,9 +39,5 @@ input {
     border: none;
     text-align: center;
     outline: none;
-    background-color: #f9f9f9;
-}
-
-input:focus {
-    background-color: #e3f2fd;
+    background: transparent;
 }
