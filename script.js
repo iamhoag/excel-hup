@@ -79,16 +79,16 @@ document.getElementById("fileInput").addEventListener("change", function(e) {
 
         createTable(rowsData.length, rowsData[0].length);
 
-        const inputs = table.querySelectorAll("input");
+const inputs = table.querySelectorAll("input");
 
-        rowsData.forEach((row, i) => {
-            row.forEach((cell, j) => {
-                let index = i * cols + j;
-                if (inputs[index]) {
-                    inputs[index].value = cell.trim();
-                }
-            });
-        });
+rowsData.forEach((row, i) => {
+    row.forEach((cell, j) => {
+        let index = i * rowsData[0].length + j;
+        if (inputs[index]) {
+            inputs[index].value = cell.trim();
+        }
+    });
+});
     };
 
     reader.readAsText(file);
