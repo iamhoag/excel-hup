@@ -41,3 +41,6 @@ input {
     outline: none;
     background: transparent;
 }
+td {
+    background-color: white;
+}
