@@ -1,19 +1,19 @@
-const rows = 10;
-const cols = 5;
 const table = document.getElementById("sheet");
+const fileInput = document.getElementById("fileInput");
+const downloadBtn = document.getElementById("downloadBtn");
 
 let data = {};
 
 // ===== TẠO BẢNG =====
-function createTable(r, c) {
+function createTable(rows, cols) {
     table.innerHTML = "";
-    data = {}; // reset dữ liệu
+    data = {};
 
-    // header A B C
+    // header
     let header = document.createElement("tr");
     header.appendChild(document.createElement("th"));
 
-    for (let j = 0; j < c; j++) {
+    for (let j = 0; j < cols; j++) {
         let th = document.createElement("th");
         th.innerText = String.fromCharCode(65 + j);
         header.appendChild(th);
@@ -21,20 +21,19 @@ function createTable(r, c) {
     table.appendChild(header);
 
     // body
-    for (let i = 0; i < r; i++) {
+    for (let i = 0; i < rows; i++) {
         let tr = document.createElement("tr");
 
         let th = document.createElement("th");
         th.innerText = i + 1;
         tr.appendChild(th);
 
-        for (let j = 0; j < c; j++) {
+        for (let j = 0; j < cols; j++) {
             let td = document.createElement("td");
             let input = document.createElement("input");
 
             let cell = String.fromCharCode(65 + j) + (i + 1);
 
-            // highlight cả ô
             input.addEventListener("focus", () => {
                 td.style.background = "#cce5ff";
             });
@@ -45,14 +44,11 @@ function createTable(r, c) {
                 let val = input.value.trim();
                 data[cell] = val;
 
-                // xử lý công thức
                 if (val.startsWith("=")) {
                     try {
                         let expr = val.substring(1);
 
-                        expr = expr.replace(/[A-Z][0-9]+/g, (match) => {
-                            return data[match] || 0;
-                        });
+                        expr = expr.replace(/[A-Z][0-9]+/g, m => data[m] || 0);
 
                         input.value = eval(expr);
                     } catch {
@@ -69,8 +65,8 @@ function createTable(r, c) {
     }
 }
 
-// ===== LOAD CSV =====
-document.getElementById("fileInput").addEventListener("change", function(e) {
+// ===== LOAD FILE CSV =====
+fileInput.addEventListener("change", function(e) {
     const file = e.target.files[0];
     if (!file) return;
 
@@ -89,7 +85,7 @@ document.getElementById("fileInput").addEventListener("change", function(e) {
 
         rowsData.forEach((row, i) => {
             row.forEach((cell, j) => {
-                let index = i * c + j; // dùng c mới, không dùng cols cũ
+                let index = i * c + j;
                 if (inputs[index]) {
                     inputs[index].value = cell.trim();
                 }
@@ -100,30 +96,29 @@ document.getElementById("fileInput").addEventListener("change", function(e) {
     reader.readAsText(file);
 });
 
-// ===== KHỞI TẠO =====
-createTable(rows, cols);
-
-function downloadTemplate() {
-    const data = [
+// ===== DOWNLOAD TEMPLATE =====
+downloadBtn.addEventListener("click", function () {
+    const template = [
         ["STT", "Tên SV", "MSV"],
-        ["1", "", ""],
-        ["2", "", ""],
-        ["3", "", ""],
-        ["4", "", ""],
-        ["5", "", ""],
     ];
 
-    // chuyển thành CSV
-    let csvContent = data.map(row => row.join(",")).join("\n");
+    for (let i = 1; i <= 20; i++) {
+        template.push([i, "", ""]);
+    }
 
-    // tạo file
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    let csv = template.map(r => r.join(",")).join("\n");
 
-    // tạo link download
-    const link = document.createElement("a");
+    const blob = new Blob([csv], { type: "text/csv" });
     const url = URL.createObjectURL(blob);
 
-    link.setAttribute("href", url);
-    link.setAttribute("download", "danh_sach_sinh_vien.csv");
-    link.click();
-}
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "danh_sach_sinh_vien.csv";
+
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+});
+
+// ===== KHỞI TẠO =====
+createTable(10, 5);
