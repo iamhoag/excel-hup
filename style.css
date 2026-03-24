@@ -9,7 +9,7 @@ table {
 }
 
 td {
-    border: 1px solid #ccc;
+    border: 1px solid black;
     width: 80px;
     height: 40px;
 }
@@ -20,6 +20,7 @@ input {
     border: none;
     text-align: center;
     outline: none;
+    background-color: #f9f9f9;
 }
 
 input:focus {
