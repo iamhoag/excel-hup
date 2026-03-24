@@ -35,11 +35,11 @@ function createTable(rows, cols) {
             let cell = String.fromCharCode(65 + j) + (i + 1);
 
             input.addEventListener("focus", () => {
-                td.style.background = "#cce5ff";
+                td.style.background = "#74b9ff";
             });
 
             input.addEventListener("blur", () => {
-                td.style.background = "white";
+                td.style.background = "";
 
                 let val = input.value.trim();
                 data[cell] = val;
@@ -96,14 +96,22 @@ fileInput.addEventListener("change", function(e) {
     reader.readAsText(file);
 });
 
-// ===== DOWNLOAD TEMPLATE =====
+// ===== DOWNLOAD TEMPLATE (XỊN HƠN) =====
 downloadBtn.addEventListener("click", function () {
-    const template = [
-        ["STT", "Tên SV", "MSV"],
+
+    const names = [
+        "Nguyễn Văn A","Trần Thị B","Lê Văn C",
+        "Phạm Văn D","Hoàng Văn E","Đỗ Thị F",
+        "Vũ Văn G","Bùi Thị H","Ngô Văn I","Phan Thị K"
     ];
 
+    const template = [["STT", "Tên SV", "MSV"]];
+
     for (let i = 1; i <= 20; i++) {
-        template.push([i, "", ""]);
+        let name = names[Math.floor(Math.random() * names.length)];
+        let msv = "SV" + Math.floor(10000 + Math.random() * 90000);
+
+        template.push([i, name, msv]);
     }
 
     let csv = template.map(r => r.join(",")).join("\n");
