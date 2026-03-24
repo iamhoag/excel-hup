@@ -102,3 +102,28 @@ document.getElementById("fileInput").addEventListener("change", function(e) {
 
 // ===== KHỞI TẠO =====
 createTable(rows, cols);
+
+function downloadTemplate() {
+    const data = [
+        ["STT", "Tên SV", "MSV"],
+        ["1", "", ""],
+        ["2", "", ""],
+        ["3", "", ""],
+        ["4", "", ""],
+        ["5", "", ""],
+    ];
+
+    // chuyển thành CSV
+    let csvContent = data.map(row => row.join(",")).join("\n");
+
+    // tạo file
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+
+    // tạo link download
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+
+    link.setAttribute("href", url);
+    link.setAttribute("download", "danh_sach_sinh_vien.csv");
+    link.click();
+}
