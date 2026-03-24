@@ -116,16 +116,21 @@ downloadBtn.addEventListener("click", function () {
 
     let csv = template.map(r => r.join(",")).join("\n");
 
-    const blob = new Blob([csv], { type: "text/csv" });
-    const url = URL.createObjectURL(blob);
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
 
+    // FIX CHUẨN
+    const url = window.URL.createObjectURL(blob);
     const a = document.createElement("a");
+
     a.href = url;
     a.download = "danh_sach_sinh_vien.csv";
 
     document.body.appendChild(a);
     a.click();
+
+    // cleanup
     document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
 });
 
 // ===== KHỞI TẠO =====
