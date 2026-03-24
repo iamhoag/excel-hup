@@ -7,6 +7,7 @@ let data = {};
 // ===== TẠO BẢNG =====
 function createTable(r, c) {
     table.innerHTML = "";
+    data = {}; // reset dữ liệu
 
     // header A B C
     let header = document.createElement("tr");
@@ -33,16 +34,18 @@ function createTable(r, c) {
 
             let cell = String.fromCharCode(65 + j) + (i + 1);
 
+            // highlight cả ô
             input.addEventListener("focus", () => {
-                input.style.background = "#cce5ff";
+                td.style.background = "#cce5ff";
             });
 
             input.addEventListener("blur", () => {
-                input.style.background = "transparent";
+                td.style.background = "white";
 
-                let val = input.value;
+                let val = input.value.trim();
                 data[cell] = val;
 
+                // xử lý công thức
                 if (val.startsWith("=")) {
                     try {
                         let expr = val.substring(1);
@@ -74,21 +77,24 @@ document.getElementById("fileInput").addEventListener("change", function(e) {
     const reader = new FileReader();
 
     reader.onload = function(event) {
-        const text = event.target.result;
+        const text = event.target.result.trim();
         const rowsData = text.split("\n").map(r => r.split(","));
 
-        createTable(rowsData.length, rowsData[0].length);
+        const r = rowsData.length;
+        const c = rowsData[0].length;
 
-const inputs = table.querySelectorAll("input");
+        createTable(r, c);
 
-rowsData.forEach((row, i) => {
-    row.forEach((cell, j) => {
-        let index = i * rowsData[0].length + j;
-        if (inputs[index]) {
-            inputs[index].value = cell.trim();
-        }
-    });
-});
+        const inputs = table.querySelectorAll("input");
+
+        rowsData.forEach((row, i) => {
+            row.forEach((cell, j) => {
+                let index = i * c + j; // dùng c mới, không dùng cols cũ
+                if (inputs[index]) {
+                    inputs[index].value = cell.trim();
+                }
+            });
+        });
     };
 
     reader.readAsText(file);
