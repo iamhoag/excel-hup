@@ -135,3 +135,54 @@ downloadBtn.addEventListener("click", function () {
 
 // ===== KHỞI TẠO =====
 createTable(10, 5);
+
+const addBtn = document.getElementById("addBtn");
+
+addBtn.addEventListener("click", function () {
+    const name = document.getElementById("nameInput").value.trim();
+    const msv = document.getElementById("msvInput").value.trim();
+
+    if (!name || !msv) {
+        alert("Nhập thiếu rồi ông nội 😑");
+        return;
+    }
+
+    // số dòng hiện tại (trừ header)
+    const currentRows = table.querySelectorAll("tr").length - 1;
+
+    let tr = document.createElement("tr");
+
+    // STT
+    let th = document.createElement("th");
+    th.innerText = currentRows + 1;
+    tr.appendChild(th);
+
+    // tạo đủ cột theo bảng hiện tại
+    const colCount = table.querySelectorAll("tr")[0].children.length - 1;
+
+    for (let j = 0; j < colCount; j++) {
+        let td = document.createElement("td");
+        let input = document.createElement("input");
+
+        if (j === 0) input.value = name;
+        else if (j === 1) input.value = msv;
+        else input.value = "";
+
+        input.addEventListener("focus", () => {
+            td.style.background = "#74b9ff";
+        });
+
+        input.addEventListener("blur", () => {
+            td.style.background = "";
+        });
+
+        td.appendChild(input);
+        tr.appendChild(td);
+    }
+
+    table.appendChild(tr);
+
+    // clear input
+    document.getElementById("nameInput").value = "";
+    document.getElementById("msvInput").value = "";
+});
