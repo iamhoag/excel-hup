@@ -1,6 +1,7 @@
 const table = document.getElementById("sheet");
 const fileInput = document.getElementById("fileInput");
 const downloadBtn = document.getElementById("downloadBtn");
+const addBtn = document.getElementById("addBtn");
 
 let data = {};
 
@@ -29,43 +30,47 @@ function createTable(rows, cols) {
         tr.appendChild(th);
 
         for (let j = 0; j < cols; j++) {
-            let td = document.createElement("td");
-            let input = document.createElement("input");
-
-            let cell = String.fromCharCode(65 + j) + (i + 1);
-
-            input.addEventListener("focus", () => {
-                td.style.background = "#74b9ff";
-            });
-
-            input.addEventListener("blur", () => {
-                td.style.background = "";
-
-                let val = input.value.trim();
-                data[cell] = val;
-
-                if (val.startsWith("=")) {
-                    try {
-                        let expr = val.substring(1);
-
-                        expr = expr.replace(/[A-Z][0-9]+/g, m => data[m] || 0);
-
-                        input.value = eval(expr);
-                    } catch {
-                        input.value = "ERR";
-                    }
-                }
-            });
-
-            td.appendChild(input);
-            tr.appendChild(td);
+            tr.appendChild(createCell(i, j));
         }
 
         table.appendChild(tr);
     }
 }
 
-// ===== LOAD FILE CSV =====
+// ===== TẠO CELL (tái sử dụng) =====
+function createCell(i, j, value = "") {
+    let td = document.createElement("td");
+    let input = document.createElement("input");
+
+    let cell = String.fromCharCode(65 + j) + (i + 1);
+    input.value = value;
+
+    input.addEventListener("focus", () => {
+        td.style.background = "#74b9ff";
+    });
+
+    input.addEventListener("blur", () => {
+        td.style.background = "";
+
+        let val = input.value.trim();
+        data[cell] = val;
+
+        if (val.startsWith("=")) {
+            try {
+                let expr = val.substring(1);
+                expr = expr.replace(/[A-Z][0-9]+/g, m => data[m] || 0);
+                input.value = eval(expr);
+            } catch {
+                input.value = "ERR";
+            }
+        }
+    });
+
+    td.appendChild(input);
+    return td;
+}
+
+// ===== LOAD CSV =====
 fileInput.addEventListener("change", function(e) {
     const file = e.target.files[0];
     if (!file) return;
@@ -96,7 +101,7 @@ fileInput.addEventListener("change", function(e) {
     reader.readAsText(file);
 });
 
-// ===== DOWNLOAD TEMPLATE (XỊN HƠN) =====
+// ===== DOWNLOAD TEMPLATE =====
 downloadBtn.addEventListener("click", function () {
 
     const names = [
@@ -117,68 +122,47 @@ downloadBtn.addEventListener("click", function () {
     let csv = template.map(r => r.join(",")).join("\n");
 
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
 
-    // FIX CHUẨN
-    const url = window.URL.createObjectURL(blob);
     const a = document.createElement("a");
-
     a.href = url;
     a.download = "danh_sach_sinh_vien.csv";
 
     document.body.appendChild(a);
     a.click();
-
-    // cleanup
     document.body.removeChild(a);
-    window.URL.revokeObjectURL(url);
+    URL.revokeObjectURL(url);
 });
 
-// ===== KHỞI TẠO =====
-createTable(10, 5);
-
-const addBtn = document.getElementById("addBtn");
-
+// ===== ADD DÒNG MỚI =====
 addBtn.addEventListener("click", function () {
+
     const name = document.getElementById("nameInput").value.trim();
     const msv = document.getElementById("msvInput").value.trim();
 
     if (!name || !msv) {
-        alert("Nhập thiếu rồi ông nội 😑");
+        alert("Nhập thiếu rồi 😑");
         return;
     }
 
-    // số dòng hiện tại (trừ header)
-    const currentRows = table.querySelectorAll("tr").length - 1;
+    const rowIndex = table.rows.length; // chuẩn STT
 
     let tr = document.createElement("tr");
 
     // STT
     let th = document.createElement("th");
-    th.innerText = currentRows + 1;
+    th.innerText = rowIndex;
     tr.appendChild(th);
 
-    // tạo đủ cột theo bảng hiện tại
-    const colCount = table.querySelectorAll("tr")[0].children.length - 1;
+    const colCount = table.rows[0].children.length - 1;
 
     for (let j = 0; j < colCount; j++) {
-        let td = document.createElement("td");
-        let input = document.createElement("input");
+        let value = "";
 
-        if (j === 0) input.value = name;
-             else if (j === 1) input.value = msv;
-             else if (j === 2) input.value = "SV"; // demo thêm
-             else input.value = "";
+        if (j === 0) value = name;
+        else if (j === 1) value = msv;
 
-        input.addEventListener("focus", () => {
-            td.style.background = "#74b9ff";
-        });
-
-        input.addEventListener("blur", () => {
-            td.style.background = "";
-        });
-
-        td.appendChild(input);
-        tr.appendChild(td);
+        tr.appendChild(createCell(rowIndex - 1, j, value));
     }
 
     table.appendChild(tr);
@@ -187,3 +171,6 @@ addBtn.addEventListener("click", function () {
     document.getElementById("nameInput").value = "";
     document.getElementById("msvInput").value = "";
 });
+
+// ===== KHỞI TẠO =====
+createTable(10, 3);
