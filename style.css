@@ -60,3 +60,20 @@ input {
     outline: none;
     background: transparent;
 }
+
+#formBox {
+    background: white;
+    padding: 15px;
+    width: 300px;
+    margin: 20px auto;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+#formBox input {
+    width: 90%;
+    padding: 8px;
+    margin: 5px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
