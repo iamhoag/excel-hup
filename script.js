@@ -165,8 +165,9 @@ addBtn.addEventListener("click", function () {
         let input = document.createElement("input");
 
         if (j === 0) input.value = name;
-        else if (j === 1) input.value = msv;
-        else input.value = "";
+             else if (j === 1) input.value = msv;
+             else if (j === 2) input.value = "SV"; // demo thêm
+             else input.value = "";
 
         input.addEventListener("focus", () => {
             td.style.background = "#74b9ff";
