@@ -6,30 +6,32 @@ const addBtn = document.getElementById("addBtn");
 let data = {};
 
 // ===== TẠO BẢNG =====
-function createTable(rows, cols) {
+function createTable(rows, headers = ["STT", "Tên SV", "MSV"]) {
     table.innerHTML = "";
     data = {};
 
-    // header
-    let header = document.createElement("tr");
-    header.appendChild(document.createElement("th"));
+    // HEADER
+    let headerRow = document.createElement("tr");
 
-    for (let j = 0; j < cols; j++) {
+    headers.forEach(h => {
         let th = document.createElement("th");
-        th.innerText = String.fromCharCode(65 + j);
-        header.appendChild(th);
-    }
-    table.appendChild(header);
+        th.innerText = h;
+        headerRow.appendChild(th);
+    });
 
-    // body
+    table.appendChild(headerRow);
+
+    // BODY
     for (let i = 0; i < rows; i++) {
         let tr = document.createElement("tr");
 
-        let th = document.createElement("th");
-        th.innerText = i + 1;
-        tr.appendChild(th);
+        // STT
+        let tdSTT = document.createElement("td");
+        tdSTT.innerText = i + 1;
+        tr.appendChild(tdSTT);
 
-        for (let j = 0; j < cols; j++) {
+        // Tên + MSV
+        for (let j = 0; j < headers.length - 1; j++) {
             tr.appendChild(createCell(i, j));
         }
 
@@ -37,12 +39,11 @@ function createTable(rows, cols) {
     }
 }
 
-// ===== TẠO CELL (tái sử dụng) =====
+// ===== TẠO CELL =====
 function createCell(i, j, value = "") {
     let td = document.createElement("td");
     let input = document.createElement("input");
 
-    let cell = String.fromCharCode(65 + j) + (i + 1);
     input.value = value;
 
     input.addEventListener("focus", () => {
@@ -51,19 +52,6 @@ function createCell(i, j, value = "") {
 
     input.addEventListener("blur", () => {
         td.style.background = "";
-
-        let val = input.value.trim();
-        data[cell] = val;
-
-        if (val.startsWith("=")) {
-            try {
-                let expr = val.substring(1);
-                expr = expr.replace(/[A-Z][0-9]+/g, m => data[m] || 0);
-                input.value = eval(expr);
-            } catch {
-                input.value = "ERR";
-            }
-        }
     });
 
     td.appendChild(input);
@@ -79,22 +67,31 @@ fileInput.addEventListener("change", function(e) {
 
     reader.onload = function(event) {
         const text = event.target.result.trim();
-        const rowsData = text.split("\n").map(r => r.split(","));
+        let rowsData = text.split("\n").map(r => r.split(","));
 
-        const r = rowsData.length;
-        const c = rowsData[0].length;
+        const headers = rowsData[0]; // lấy header
+        rowsData.shift(); // bỏ header
 
-        createTable(r, c);
+        createTable(0, headers);
 
-        const inputs = table.querySelectorAll("input");
+        rowsData.forEach(row => {
+            let tr = document.createElement("tr");
 
-        rowsData.forEach((row, i) => {
-            row.forEach((cell, j) => {
-                let index = i * c + j;
-                if (inputs[index]) {
-                    inputs[index].value = cell.trim();
+            row.forEach((cell, index) => {
+                let td = document.createElement("td");
+
+                if (index === 0) {
+                    td.innerText = cell;
+                } else {
+                    let input = document.createElement("input");
+                    input.value = cell;
+                    td.appendChild(input);
                 }
+
+                tr.appendChild(td);
             });
+
+            table.appendChild(tr);
         });
     };
 
@@ -104,19 +101,10 @@ fileInput.addEventListener("change", function(e) {
 // ===== DOWNLOAD TEMPLATE =====
 downloadBtn.addEventListener("click", function () {
 
-    const names = [
-        "Nguyễn Văn A","Trần Thị B","Lê Văn C",
-        "Phạm Văn D","Hoàng Văn E","Đỗ Thị F",
-        "Vũ Văn G","Bùi Thị H","Ngô Văn I","Phan Thị K"
-    ];
-
     const template = [["STT", "Tên SV", "MSV"]];
 
     for (let i = 1; i <= 20; i++) {
-        let name = names[Math.floor(Math.random() * names.length)];
-        let msv = "SV" + Math.floor(10000 + Math.random() * 90000);
-
-        template.push([i, name, msv]);
+        template.push([i, "Nguyễn Văn A", "SV" + (10000 + i)]);
     }
 
     let csv = template.map(r => r.join(",")).join("\n");
@@ -134,43 +122,38 @@ downloadBtn.addEventListener("click", function () {
     URL.revokeObjectURL(url);
 });
 
-// ===== ADD DÒNG MỚI =====
+// ===== ADD =====
 addBtn.addEventListener("click", function () {
 
     const name = document.getElementById("nameInput").value.trim();
     const msv = document.getElementById("msvInput").value.trim();
 
     if (!name || !msv) {
-        alert("Nhập thiếu rồi 😑");
+        alert("Nhập thiếu 😑");
         return;
     }
 
-    const rowIndex = table.rows.length; // chuẩn STT
+    const rowIndex = table.rows.length;
 
     let tr = document.createElement("tr");
 
     // STT
-    let th = document.createElement("th");
-    th.innerText = rowIndex;
-    tr.appendChild(th);
+    let tdSTT = document.createElement("td");
+    tdSTT.innerText = rowIndex;
+    tr.appendChild(tdSTT);
 
-    const colCount = table.rows[0].children.length - 1;
+    // Tên
+    tr.appendChild(createCell(rowIndex, 0, name));
 
-    for (let j = 0; j < colCount; j++) {
-        let value = "";
-
-        if (j === 0) value = name;
-        else if (j === 1) value = msv;
-
-        tr.appendChild(createCell(rowIndex - 1, j, value));
-    }
+    // MSV
+    tr.appendChild(createCell(rowIndex, 1, msv));
 
     table.appendChild(tr);
 
-    // clear input
+    // clear
     document.getElementById("nameInput").value = "";
     document.getElementById("msvInput").value = "";
 });
 
-// ===== KHỞI TẠO =====
-createTable(10, 3);
+// ===== INIT =====
+createTable(5);
