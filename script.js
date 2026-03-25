@@ -125,32 +125,32 @@ downloadBtn.addEventListener("click", function () {
 // ===== ADD =====
 addBtn.addEventListener("click", function () {
 
+    const stt = document.getElementById("sttInput").value.trim();
     const name = document.getElementById("nameInput").value.trim();
     const msv = document.getElementById("msvInput").value.trim();
 
-    if (!name || !msv) {
-        alert("Nhập thiếu 😑");
+    if (!stt || !name || !msv) {
+        alert("Thiếu dữ liệu 😑");
         return;
     }
-
-    const rowIndex = table.rows.length;
 
     let tr = document.createElement("tr");
 
     // STT
     let tdSTT = document.createElement("td");
-    tdSTT.innerText = rowIndex;
+    tdSTT.innerText = stt;
     tr.appendChild(tdSTT);
 
     // Tên
-    tr.appendChild(createCell(rowIndex, 0, name));
+    tr.appendChild(createCell(0, 0, name));
 
     // MSV
-    tr.appendChild(createCell(rowIndex, 1, msv));
+    tr.appendChild(createCell(0, 1, msv));
 
     table.appendChild(tr);
 
     // clear
+    document.getElementById("sttInput").value = "";
     document.getElementById("nameInput").value = "";
     document.getElementById("msvInput").value = "";
 });
